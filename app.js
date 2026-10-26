@@ -102,7 +102,9 @@
   // Bộ lập lịch nhìn trước: step(v, t, i) lên lịch 1 chu kỳ tại t và trả về độ dài chu kỳ
   function runPattern(v, step) {
     var t = ctx.currentTime + 0.02, i = 0;
-    function tick() { while (t < ctx.currentTime + 0.35) { t += step(v, t, i++); } }
+    var offline = (typeof OfflineAudioContext !== 'undefined') && ctx instanceof OfflineAudioContext;
+    function tick() { var h = offline ? ctx.length / ctx.sampleRate : ctx.currentTime + 0.35; while (t < h) { t += step(v, t, i++); } }
+    if (offline) { tick(); return; }
     tick();
     v.timers.push(setInterval(tick, 40));
   }
@@ -178,6 +180,89 @@
         g.linearRampToValueAtTime(1, t + 0.36); g.setValueAtTime(1, t + 0.9); g.linearRampToValueAtTime(0, t + 0.93);
         return 1.5; }); return v; } }
   ];
+
+  /* ===== Âm thanh mới, đo từ 2 clip TikTok (chỉ tổng hợp, không dùng audio gốc) ===== */
+  // "Tọp": nhấp nhanh 640→830 Hz trong 50 ms, giữ ~80 ms rồi tắt; kèm giọng thứ hai ~1300 Hz (tỉ lệ 1,566)
+  var TOP_WAVES = [{ type: 'square', gain: 0.45 }, { type: 'triangle', detune: 5, gain: 0.3 }, { type: 'square', mult: 1.566, gain: 0.2 }];
+  function topVoice() { return hornVoice({ waves: TOP_WAVES, drive: 3.2, hp: 380, bp: 1000, bpQ: 0.6, peak: 1700, lp: 4200, gated: true, start: 640, level: 0.95 }); }
+  function topShape(v, t) {
+    var p = P(v), g = v.gate.gain;
+    p.setValueAtTime(630, t); p.exponentialRampToValueAtTime(830, t + 0.065);
+    g.setValueAtTime(0, t); g.linearRampToValueAtTime(1, t + 0.006);
+    g.setValueAtTime(1, t + 0.12); g.linearRampToValueAtTime(0, t + 0.165);
+  }
+  var EXTRA = [
+    { id: 'toploop', name: 'TỌP LIÊN TỤC', sub: 'Tọp tọp đoàn ưu tiên', speed: 3, make: function () {
+      var v = topVoice();
+      runPattern(v, function (v, t) { topShape(v, t); topShape(v, t + 0.19); return 0.72; }); return v; } },
+    { id: 'jerk', name: 'HÚ GIẬT', sub: '1075Hz giật xuống 510', speed: 2, make: function () {
+      var v = hornVoice({ waves: [{ type: 'sawtooth', gain: 0.5 }, { type: 'square', gain: 0.18 }], drive: 2.5, hp: 300, bp: 1100, bpQ: 0.5, peak: 2150, lp: 5000, start: 1075 });
+      runPattern(v, function (v, t) {
+        var p = P(v);
+        p.setValueAtTime(1075, t); p.setValueAtTime(1075, t + 0.25);
+        p.exponentialRampToValueAtTime(700, t + 0.31); p.exponentialRampToValueAtTime(515, t + 0.38);
+        p.exponentialRampToValueAtTime(845, t + 0.42); p.exponentialRampToValueAtTime(1050, t + 0.50);
+        p.linearRampToValueAtTime(1075, t + 0.53);
+        return 0.53; }); return v; } },
+    { id: 'whoop', name: 'HÚ VỌT', sub: 'Vọt lên 1600Hz', speed: 2, make: function () {
+      var v = hornVoice({ waves: SAW, drive: 3, bp: 1250, bpQ: 0.6, start: 900 });
+      runPattern(v, function (v, t) {
+        var p = P(v);
+        p.setValueAtTime(900, t); p.setTargetAtTime(1300, t, 0.09);
+        p.setValueAtTime(1270, t + 0.30); p.exponentialRampToValueAtTime(1600, t + 0.48);
+        p.exponentialRampToValueAtTime(850, t + 0.62);
+        for (var k = 0, tt = t + 0.62; k < 7; k++, tt += 0.04) p.setValueAtTime(k % 2 ? 1190 : 840, tt);
+        return 0.90; }); return v; } },
+    { id: 'jpwail', name: 'CÒI NHẬT', sub: 'Patlite lên/xuống chậm', speed: 1, make: function () {
+      var v = hornVoice({ waves: [{ type: 'sawtooth', gain: 0.5 }, { type: 'triangle', gain: 0.3 }], drive: 2, hp: 250, bp: 900, bpQ: 0.45, peak: 1700, lp: 4500, start: 366 });
+      runPattern(v, function (v, t) {
+        var p = P(v);
+        p.setValueAtTime(366, t); p.exponentialRampToValueAtTime(630, t + 1.0);
+        p.linearRampToValueAtTime(716, t + 1.5); p.linearRampToValueAtTime(852, t + 3.75);
+        p.setValueAtTime(852, t + 5.0); p.exponentialRampToValueAtTime(366, t + 7.5);
+        return 7.5; }); return v; } },
+    { id: 'bell', name: 'CHUÔNG NHẬT', sub: 'Chuông xe cứu hỏa', speed: 1, make: function () {
+      return bellVoice(); } },
+    { id: 'pulsehorn', name: 'KÈN NHÁY', sub: 'Kèn hơi 221Hz nhấp', speed: 3, make: function () {
+      var v = hornVoice({ waves: [{ type: 'sawtooth', gain: 0.5 }, { type: 'sawtooth', detune: 12, gain: 0.35 }], drive: 4, hp: 400, bp: 900, bpQ: 0.5, peak: 1100, lp: 3200, gated: true, start: 221, level: 1.0 });
+      runPattern(v, function (v, t) {
+        var g = v.gate.gain;
+        g.setValueAtTime(0, t); g.linearRampToValueAtTime(1, t + 0.008);
+        g.setValueAtTime(1, t + 0.10); g.linearRampToValueAtTime(0, t + 0.115);
+        return 0.175; }); return v; } }
+  ];
+  TONES = TONES.concat(EXTRA.map(function (t) { t.extra = true; return t; }));
+
+  /* Chuông: các họa âm đo được 641/1182/1824/2366/3008/3549/3649 Hz, tắt dần vài giây */
+  var BELL = [[541, 0.03, 1.5], [641, 0.14, 2.5], [1182, 1.0, 4], [1824, 0.14, 3], [2366, 0.11, 2], [3008, 0.9, 3.5], [3549, 0.1, 1.5], [3649, 0.055, 1.5]];
+  function bellVoice() {
+    var v = { nodes: [], timers: [] };
+    v.out = ctx.createGain(); v.out.gain.value = 0.32; v.out.connect(master);
+    function strike(t, vel) {
+      BELL.forEach(function (b) {
+        var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = b[0];
+        var g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(b[1] * vel, t + 0.003);
+        g.gain.setTargetAtTime(0, t + 0.003, b[2] / 4.6);
+        o.connect(g); g.connect(v.out); o.start(t); o.stop(t + b[2] + 0.2);
+      });
+      var n = noiseSource(), f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3000; f.Q.value = 1;
+      var ng = ctx.createGain(); ng.gain.setValueAtTime(0.5 * vel, t); ng.gain.setTargetAtTime(0, t, 0.01);
+      n.connect(f); f.connect(ng); ng.connect(v.out); n.start(t); n.stop(t + 0.1);
+    }
+    // nhịp gõ đo được: từng cặp "keng keng" cách 0,49 s, lặp mỗi 1,5 s
+    runPattern(v, function (v, t) { strike(t, 1); strike(t + 0.49, 0.85); return 1.5; });
+    return v;
+  }
+
+  /* Nút TỌP TỌP: mỗi lần chạm phát 2 tiếng "tọp" cách nhau 0,19 s, chồng lên tông đang phát */
+  var flashUntil = 0;
+  function fireTop() {
+    if (!ensureAudio()) return;
+    var v = topVoice(), t = ctx.currentTime + 0.01;
+    topShape(v, t); topShape(v, t + 0.19);
+    setTimeout(function () { stopVoice(v, 0.02); }, 450);
+    flashUntil = performance.now() + 450;
+  }
 
   /* Còi thổi: sóng sin cao + rung (FM/AM ~ 28Hz như hạt bi trong còi) + tiếng hơi */
   function whistleVoice() {
@@ -330,9 +415,11 @@
   var leds = [];
   function lightLoop(ts) {
     var bar = $('lightbar');
-    bar.classList.toggle('on', lightOn);
-    if (lightOn) {
-      var per = [640, 420, 260][lightSpeed - 1] || 640;
+    var lit = lightOn || ts < flashUntil;
+    bar.classList.toggle('on', lit);
+    if (lit) {
+      var spd = lightOn ? lightSpeed : 3;
+      var per = [640, 420, 260][spd - 1] || 640;
       var ph = (ts % per) / per;           // 0..1
       var half = ph < 0.5 ? 'r' : 'b';
       var sub = Math.floor((ph % 0.5) / 0.5 * 6); // 3 lần chớp mỗi nửa
@@ -350,14 +437,15 @@
 
   /* ---------- Giao diện ---------- */
   function build() {
-    var grid = $('grid');
     TONES.forEach(function (t) {
+      var grid = t.extra ? $('grid2') : $('grid');
       var b = document.createElement('button');
       b.className = 'tone'; b.dataset.id = t.id;
       b.innerHTML = t.name + '<small>' + t.sub + '</small>';
       b.addEventListener('pointerdown', function (e) { e.preventDefault(); selectTone(t); });
       grid.appendChild(b);
     });
+    $('top').addEventListener('pointerdown', function (e) { e.preventDefault(); fireTop(); $('top').classList.add('held'); setTimeout(function () { $('top').classList.remove('held'); }, 380); });
     holdButton($('airhorn'), function () { if (hornHolds++ === 0) startHorn(); }, function () { if (hornHolds > 0 && --hornHolds === 0) stopHorn(); });
     holdButton($('manual'), function () { if (manualHolds++ === 0) manualPress(); }, function () { if (manualHolds > 0 && --manualHolds === 0) manualRelease(); });
     $('stop').addEventListener('pointerdown', function (e) { e.preventDefault(); ensureAudio(); stopAll(); });
@@ -388,6 +476,19 @@
   }
 
   build();
+
+  // Móc kiểm thử: dựng âm thanh offline để so phổ với bản gốc
+  window.__coiHuRender = function (id, secs, sr) {
+    var saved = [ctx, master, noiseBuf];
+    var oc = new OfflineAudioContext(1, Math.round(secs * sr), sr);
+    ctx = oc; master = oc.createGain(); master.gain.value = 0.6; master.connect(oc.destination);
+    noiseBuf = oc.createBuffer(1, sr * 2, sr); var d = noiseBuf.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    try {
+      if (id === 'top') { var v = topVoice(); topShape(v, 0.05); topShape(v, 0.24); }
+      else TONES.filter(function (t) { return t.id === id; })[0].make();
+    } finally { ctx = saved[0]; master = saved[1]; noiseBuf = saved[2]; }
+    return oc.startRendering();
+  };
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
