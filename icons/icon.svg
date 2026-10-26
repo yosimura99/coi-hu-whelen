@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<defs>
+<radialGradient id="bg" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#262b35"/><stop offset="1" stop-color="#07080b"/></radialGradient>
+<linearGradient id="r" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff5a4a"/><stop offset="1" stop-color="#b00d06"/></linearGradient>
+<linearGradient id="b" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5a8cff"/><stop offset="1" stop-color="#0d3ab0"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="10"/></filter>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<rect x="76" y="150" width="170" height="70" rx="22" fill="#ff2a1a" filter="url(#glow)" opacity=".8"/>
+<rect x="266" y="150" width="170" height="70" rx="22" fill="#2a6bff" filter="url(#glow)" opacity=".8"/>
+<rect x="76" y="150" width="170" height="70" rx="22" fill="url(#r)"/>
+<rect x="266" y="150" width="170" height="70" rx="22" fill="url(#b)"/>
+<rect x="66" y="214" width="380" height="22" rx="8" fill="#3a3f48"/>
+<g fill="none" stroke="#e8ecf2" stroke-width="16" stroke-linecap="round">
+<path d="M196 300 q60 50 120 0"/><path d="M160 300 q96 90 192 0" opacity=".7"/><path d="M124 300 q132 130 264 0" opacity=".45"/>
+</g>
+<text x="256" y="455" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="64" fill="#e8ecf2" text-anchor="middle" letter-spacing="4">CÒI HÚ</text>
+</svg>

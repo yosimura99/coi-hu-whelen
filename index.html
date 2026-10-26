@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Còi Hú Whelen</title>
+<meta name="theme-color" content="#0a0c10">
+<meta name="description" content="Giả lập tiếng còi hú kiểu Whelen bằng Web Audio">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Còi Hú">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="lightbar" id="lightbar">
+  <div class="led r"></div><div class="led r"></div><div class="led r"></div><div class="led r"></div>
+  <div class="led w"></div><div class="led w"></div>
+  <div class="led b"></div><div class="led b"></div><div class="led b"></div><div class="led b"></div>
+</div>
+<main class="panel">
+  <header class="brand">
+    <div class="logo">WHELEN<span>-STYLE</span></div>
+    <div class="model">BỘ ĐIỀU KHIỂN CÒI HÚ</div>
+    <div class="status" id="status"><span class="dot"></span><span id="statusText">Sẵn sàng – chạm để bắt đầu</span></div>
+  </header>
+  <section class="grid" id="grid"></section>
+  <section class="row2">
+    <button class="big horn" id="airhorn" aria-label="Kèn hơi">KÈN HƠI<small>Giữ để bấm</small></button>
+    <button class="big manual" id="manual" aria-label="Hú tay">HÚ TAY<small>Giữ để lên cao</small></button>
+  </section>
+  <section class="vol">
+    <label for="volume">ÂM LƯỢNG</label>
+    <input type="range" id="volume" min="0" max="100" value="70">
+    <span id="volVal">70%</span>
+  </section>
+  <button class="stop" id="stop">DỪNG</button>
+  <p class="note">Âm thanh được tạo trực tiếp bằng Web Audio, không dùng file ghi âm. Nhớ tắt chế độ im lặng trên iPhone (gạt nút bên hông) để nghe tiếng.<br>Ứng dụng mô phỏng giải trí, không liên kết với Whelen Engineering. Không dùng nơi công cộng gây hiểu nhầm.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

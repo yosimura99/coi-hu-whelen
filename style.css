@@ -1,0 +1,40 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;background:#050608;color:#e8ecf2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;touch-action:manipulation;overscroll-behavior:none}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);min-height:100vh}
+.lightbar{position:sticky;top:0;z-index:5;display:flex;gap:4px;padding:6px 8px;background:linear-gradient(#1b1e24,#0b0d11);border-bottom:2px solid #000;box-shadow:0 4px 12px #000a}
+.led{flex:1;height:22px;border-radius:5px;background:#222;border:1px solid #333;transition:background .04s,box-shadow .04s}
+.led.r{background:#3a0b0b}.led.b{background:#0b1640}.led.w{background:#2a2a2a}
+.lightbar.on .led.r.f{background:#ff2a2a;box-shadow:0 0 18px 6px #ff1a1aaa}
+.lightbar.on .led.b.f{background:#2a6bff;box-shadow:0 0 18px 6px #1a5affaa}
+.lightbar.on .led.w.f{background:#fff;box-shadow:0 0 16px 6px #fffa}
+.panel{max-width:520px;margin:0 auto;padding:12px 12px 24px;background:radial-gradient(circle at 50% 0,#1d2129,#0b0d11 70%)}
+.brand{text-align:center;margin:6px 0 12px}
+.logo{font-weight:900;letter-spacing:4px;font-size:26px;color:#d7dde6;text-shadow:0 2px 0 #000}
+.logo span{font-size:12px;letter-spacing:2px;color:#8a93a3;margin-left:4px}
+.model{font-size:11px;letter-spacing:3px;color:#7d8696;margin-top:2px}
+.status{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:5px 12px;border-radius:20px;background:#000;border:1px solid #262b33;font-size:12px;color:#9aa4b4}
+.status .dot{width:9px;height:9px;border-radius:50%;background:#333}
+.status.on .dot{background:#3f6;box-shadow:0 0 8px #3f6}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tone{position:relative;height:72px;border-radius:12px;border:1px solid #2c323c;background:linear-gradient(#2a2f38,#15181d);color:#cfd6e0;font-weight:800;font-size:13px;line-height:1.15;padding:6px 4px;box-shadow:inset 0 1px 0 #ffffff14,0 3px 0 #000,0 4px 8px #0008;text-shadow:0 1px 0 #000}
+.tone small{display:block;font-weight:500;font-size:10px;color:#808a9a;margin-top:3px}
+.tone::after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#2a2f37}
+.tone.active{background:linear-gradient(#a3120f,#5a0806);border-color:#ff4b3a;color:#fff;box-shadow:0 0 18px #ff2a1a99,inset 0 0 14px #ff8a7a55}
+.tone.active small{color:#ffd0c8}
+.tone.active::after{background:#ff3;box-shadow:0 0 8px #ff3}
+.tone:active,.big:active,.stop:active{transform:translateY(2px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.big{height:86px;border-radius:14px;font-size:19px;font-weight:900;letter-spacing:1px;color:#fff;border:1px solid #444;box-shadow:0 4px 0 #000,0 6px 12px #000a}
+.big small{display:block;font-size:11px;font-weight:500;opacity:.75;letter-spacing:0}
+.horn{background:linear-gradient(#e8a10f,#8a5a00);border-color:#ffc94a;text-shadow:0 1px 2px #000}
+.horn.held{background:linear-gradient(#ffd34a,#e08a00);box-shadow:0 0 26px #ffb300cc}
+.manual{background:linear-gradient(#2c5fd6,#122f7a);border-color:#5a8cff}
+.manual.held{background:linear-gradient(#5a8cff,#2c5fd6);box-shadow:0 0 26px #3a7affcc}
+.vol{display:flex;align-items:center;gap:10px;margin:14px 2px;padding:10px 12px;border-radius:12px;background:#0d1014;border:1px solid #222832}
+.vol label{font-size:12px;font-weight:800;letter-spacing:1px;color:#9aa4b4}
+.vol span{width:40px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;background:linear-gradient(90deg,#2a6bff,#ff2a2a);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#e8ecf2;border:3px solid #111;box-shadow:0 2px 6px #000}
+.stop{width:100%;height:78px;border-radius:40px;border:3px solid #ff5a4a;background:radial-gradient(circle at 50% 30%,#ff3b2b,#8a0a04);color:#fff;font-size:28px;font-weight:900;letter-spacing:6px;box-shadow:0 0 22px #ff2a1a66,0 5px 0 #000}
+.note{font-size:11px;color:#6d7686;text-align:center;line-height:1.5;margin-top:14px}
+@media (max-width:360px){.tone{font-size:12px;height:66px}}
